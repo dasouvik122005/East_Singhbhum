@@ -1,0 +1,17 @@
+# Data files (too large for GitHub)
+grace/
+*.nc
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
