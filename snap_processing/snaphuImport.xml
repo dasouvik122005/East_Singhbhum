@@ -1,0 +1,37 @@
+<graph id="SnaphuImportGraph">
+    <version>1.0</version>
+    <node id="Read-Phase">
+        <operator>Read</operator>
+        <sources/>
+        <parameters>
+            <file>./output/MST_20260505_SLV_20260129_ifg.dim</file>
+        </parameters>
+    </node>
+    <node id="Read-Unwrapped-Phase">
+        <operator>Read</operator>
+        <sources/>
+        <parameters>
+            <file>./output/snaphu_export/MST_20260505_SLV_20260129_ifg/UnwPhase_ifg_srd_VV_05May2026_29Jan2026.snaphu.hdr</file>
+        </parameters>
+    </node>
+    <node id="SnaphuImport">
+        <operator>SnaphuImport</operator>
+        <sources>
+            <sourceProduct refid="Read-Phase"/>
+            <sourceProduct.1 refid="Read-Unwrapped-Phase"/>
+        </sources>
+        <parameters>
+            <doNotKeepWrapped>false</doNotKeepWrapped>
+        </parameters>
+    </node>
+    <node id="Write">
+        <operator>Write</operator>
+        <sources>
+            <sourceProduct refid="SnaphuImport"/>
+        </sources>
+        <parameters>
+            <file>./output/insar_unwrapped_stack.dim</file>
+            <formatName>BEAM-DIMAP</formatName>
+        </parameters>
+    </node>
+</graph>

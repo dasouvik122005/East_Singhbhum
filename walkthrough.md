@@ -121,6 +121,6 @@
 ## Next Steps
 
 1. **For more accurate results**: Download GLDAS data to isolate Groundwater Storage Anomaly (GWSA) from TWSA
-2. **For publication-quality subsidence maps**: Process Sentinel-1 InSAR data using LiCSBAS or SNAP+StaMPS
+2. **For publication-quality subsidence maps**: Process Sentinel-1 InSAR data using the local [SNAP Windows workflow](./snap_processing/README.md)
 3. **For validation**: Compare with CGWB aquifer reports and any available GPS/leveling data
 4. **Sensitivity analysis**: Vary Sy, Ssk, and b to understand the range of possible subsidence estimates

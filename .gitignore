@@ -1,7 +1,11 @@
 # Data files (too large for GitHub)
 grace/
 *.nc
-
+results/
+snap_processing/zip_data/
+snap_processing/output/
+snap_processing/snaphu/
+snap_processing/snaphu-v2.0.7.zip
 # Python
 __pycache__/
 *.pyc

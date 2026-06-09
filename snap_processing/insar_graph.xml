@@ -1,0 +1,155 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <!-- Read Master image -->
+  <node id="ReadMaster">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <file>${master}</file>
+    </parameters>
+  </node>
+  
+  <!-- Read Slave image -->
+  <node id="ReadSlave">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <file>${slave}</file>
+    </parameters>
+  </node>
+
+  <!-- Split Master subswath and bursts -->
+  <node id="SplitMaster">
+    <operator>TOPSAR-Split</operator>
+    <sources>
+      <sourceProduct>ReadMaster</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <subswath>${subswath}</subswath>
+      <selectedPolarisations>VV</selectedPolarisations>
+      <firstBurstIndex>${firstBurst}</firstBurstIndex>
+      <lastBurstIndex>${lastBurst}</lastBurstIndex>
+    </parameters>
+  </node>
+
+  <!-- Split Slave subswath and bursts -->
+  <node id="SplitSlave">
+    <operator>TOPSAR-Split</operator>
+    <sources>
+      <sourceProduct>ReadSlave</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <subswath>${subswath}</subswath>
+      <selectedPolarisations>VV</selectedPolarisations>
+      <firstBurstIndex>${firstBurst}</firstBurstIndex>
+      <lastBurstIndex>${lastBurst}</lastBurstIndex>
+    </parameters>
+  </node>
+
+  <!-- Apply Orbit File on Master -->
+  <node id="OrbitMaster">
+    <operator>Apply-Orbit-File</operator>
+    <sources>
+      <sourceProduct>SplitMaster</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <orbitType>Sentinel Precise (Auto Download)</orbitType>
+      <polyDegree>3</polyDegree>
+      <continueOnFail>false</continueOnFail>
+    </parameters>
+  </node>
+
+  <!-- Apply Orbit File on Slave -->
+  <node id="OrbitSlave">
+    <operator>Apply-Orbit-File</operator>
+    <sources>
+      <sourceProduct>SplitSlave</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <orbitType>Sentinel Precise (Auto Download)</orbitType>
+      <polyDegree>3</polyDegree>
+      <continueOnFail>false</continueOnFail>
+    </parameters>
+  </node>
+
+  <!-- Coregistration: Back-Geocoding -->
+  <node id="BackGeocoding">
+    <operator>Back-Geocoding</operator>
+    <sources>
+      <sourceProduct.1>OrbitMaster</sourceProduct.1>
+      <sourceProduct.2>OrbitSlave</sourceProduct.2>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <demName>SRTM 3Sec</demName>
+      <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <resamplingType>BILINEAR_INTERPOLATION</resamplingType>
+      <maskOutAreaWithoutElevation>false</maskOutAreaWithoutElevation>
+      <outputDerampDemodPhase>false</outputDerampDemodPhase>
+      <disableReramp>false</disableReramp>
+    </parameters>
+  </node>
+
+  <!-- Interferogram Formation -->
+  <node id="Interferogram">
+    <operator>Interferogram</operator>
+    <sources>
+      <sourceProduct>BackGeocoding</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <subtractFlatEarthPhase>true</subtractFlatEarthPhase>
+      <srpPolynomialDegree>5</srpPolynomialDegree>
+      <srpNumberPoints>501</srpNumberPoints>
+      <orbitDegree>3</orbitDegree>
+      <includeCoherence>true</includeCoherence>
+      <cohWinRg>10</cohWinRg>
+      <cohWinAz>2</cohWinAz>
+      <squarePixel>true</squarePixel>
+      <subtractTopographicPhase>false</subtractTopographicPhase>
+      <demName>SRTM 3Sec</demName>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <externalDEMApplyEGM>true</externalDEMApplyEGM>
+      <tileExtensionPercent>100</tileExtensionPercent>
+    </parameters>
+  </node>
+
+  <!-- S-1 TOPS Deburst -->
+  <node id="TOPSAR-Deburst">
+    <operator>TOPSAR-Deburst</operator>
+    <sources>
+      <sourceProduct>Interferogram</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <selectedPolarisations>VV</selectedPolarisations>
+    </parameters>
+  </node>
+
+  <!-- Topographic Phase Removal -->
+  <node id="TopoPhaseRemoval">
+    <operator>TopoPhaseRemoval</operator>
+    <sources>
+      <sourceProduct>TOPSAR-Deburst</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <orbitDegree>3</orbitDegree>
+      <demName>SRTM 3Sec</demName>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <tileExtensionPercent>100</tileExtensionPercent>
+    </parameters>
+  </node>
+
+  <!-- Write Output wrapped interferogram -->
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct>TopoPhaseRemoval</sourceProduct>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.DefaultDomElement">
+      <file>${output}</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+</graph>

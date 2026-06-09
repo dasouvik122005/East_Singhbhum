@@ -216,7 +216,7 @@ python land_subsidence_analysis.py
 ## Future Work
 
 - Download GLDAS NOAH data to isolate Groundwater Storage Anomaly (GWSA) from TWSA
-- Process Sentinel-1 InSAR for millimeter-scale surface deformation maps
+- Process Sentinel-1 InSAR for millimeter-scale surface deformation maps (see the local [SNAP Windows workflow](./snap_processing/README.md))
 - Obtain site-specific aquifer parameters from CGWB
 - Perform sensitivity analysis on Sy, Ssk, and b parameters
 
